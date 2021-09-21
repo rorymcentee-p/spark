@@ -7,5 +7,8 @@ jobs:
       - uses: actions/checkout@master
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/scala@master
+        with:
+          java-version: '11'
+          distribution: 'adopt'
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
