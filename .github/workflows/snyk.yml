@@ -1,24 +1,25 @@
-name: Snyk Scan Open Source
+name: Snyk
+
 on:
   push:
-    branches: master
+    branches: [ master ]
 
 jobs:
-  build:
+  security:
     runs-on: ubuntu-latest
+
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
     steps:
-      - uses: actions/checkout@v1
-      - name: Use Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: NPM Install
-        run: npm install
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Install Snyk
         run: sudo npm install -g snyk
-      - name: Snyk Authenticate
-        run: snyk auth "$SNYK_TOKEN"
-      - name: Snyk Test
-        run: snyk test --severity-threshold=high --fail-on=upgradable
+
+      - name: Add correct sbt-dependency-graph version
+        run: mkdir -p $HOME/.sbt/1.0/plugins && echo 'addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")' >> $HOME/.sbt/1.0/plugins/plugins.sbt
+
+      - name: Run Snyk to check for vulnerabilities
+        run: snyk monitor --project-name="rorymcentee-p/spark"
